@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: pharmatrack-decision
+Version: 1.0.0
+Summary: PharmaTrack-X Expiry-Risk and Demand-Uncertainty-Aware Decision Module
+Author: PharmaTrack-X Team
+Requires-Python: >=3.10
+Dynamic: author
+Dynamic: requires-python
+Dynamic: summary
