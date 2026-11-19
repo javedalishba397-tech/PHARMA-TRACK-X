@@ -5,7 +5,7 @@ import Modal from '../components/Modal';
 import Badge from '../components/Badge';
 import { FormField, Input, Select, Btn, ErrorAlert } from '../components/FormComponents';
 import { Settings as SettingsIcon, Plus, Edit, Shield, List, Power } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
+import { safeFormatDate } from '../utils/date';
 
 // ── User Modal ────────────────────────────────────────────────────────────────
 function UserModal({ existing, onClose, onSaved }) {
@@ -184,7 +184,7 @@ export default function SettingsPage() {
                       <td className="px-4 py-3"><Badge label={u.role} /></td>
                       <td className="px-4 py-3"><Badge label={u.is_active ? 'Active' : 'Inactive'} /></td>
                       <td className="px-4 py-3 text-xs text-gray-400">
-                        {u.created_at ? format(parseISO(u.created_at), 'dd MMM yyyy') : '—'}
+                        {safeFormatDate(u.created_at, 'dd MMM yyyy')}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1 justify-end">
@@ -228,7 +228,7 @@ export default function SettingsPage() {
                     <td className="px-4 py-3 font-bold text-blue-700">{s.setting_value}</td>
                     <td className="px-4 py-3 text-gray-500 text-xs">{s.description ?? '—'}</td>
                     <td className="px-4 py-3 text-xs text-gray-400">
-                      {s.updated_at ? format(parseISO(s.updated_at), 'dd MMM yy HH:mm') : '—'}
+                      {safeFormatDate(s.updated_at, 'dd MMM yy HH:mm')}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <button onClick={() => { setEditSetting(s); setSettingVal(s.setting_value); setSettingError(''); }}
@@ -262,14 +262,14 @@ export default function SettingsPage() {
                   {auditLogs.map((log, i) => (
                     <tr key={i} className="border-b border-gray-100 hover:bg-gray-50">
                       <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">
-                        {log.logged_at ? format(parseISO(log.logged_at), 'dd MMM yyyy HH:mm:ss') : '—'}
+                        {safeFormatDate(log.logged_at, 'dd MMM yyyy HH:mm:ss')}
                       </td>
-                      <td className="px-4 py-3 text-xs font-mono font-medium text-gray-900">{log.username ?? `#${log.user_id}`}</td>
+                      <td className="px-4 py-3 text-xs font-mono font-medium text-gray-900">{log.username ?? (log.user_id ? `#${log.user_id}` : 'Unauthenticated')}</td>
                       <td className="px-4 py-3 text-xs font-semibold text-blue-800">{log.action}</td>
                       <td className="px-4 py-3 text-xs text-gray-600">{log.entity ?? '—'}</td>
                       <td className="px-4 py-3 text-xs font-mono text-gray-500">{log.entity_id ?? '—'}</td>
                       <td className="px-4 py-3">
-                        <Badge label={log.result === 'Success' ? 'Approved' : 'Rejected'} />
+                        <Badge label={log.result} />
                       </td>
                       <td className="px-4 py-3 text-xs font-mono text-gray-400">{log.ip_address ?? '127.0.0.1'}</td>
                     </tr>

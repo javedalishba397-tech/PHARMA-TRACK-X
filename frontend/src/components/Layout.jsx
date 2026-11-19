@@ -8,9 +8,10 @@ import Badge from './Badge';
 
 export default function Layout({ children }) {
   const { user, logout, isRole, inactivityWarning, resetInactivityTimer } = useAuth();
-  const navigate = useNavigate();
 
-  const handleLogout = () => { logout(); navigate('/login'); };
+  const handleLogout = () => {
+    logout('logged_out');
+  };
 
   const navItems = [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin','pharmacist','clerk'] },

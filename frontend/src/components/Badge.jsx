@@ -4,6 +4,9 @@ const variants = {
   Approved:  'bg-green-100 text-green-800 border border-green-200',
   Rejected:  'bg-red-100 text-red-800 border border-red-200',
   Modified:  'bg-purple-100 text-purple-800 border border-purple-200',
+  Denied:    'bg-red-100 text-red-800 border border-red-200',
+  Success:   'bg-green-100 text-green-800 border border-green-200',
+  Failure:   'bg-red-100 text-red-800 border border-red-200',
   // Risk
   Low:       'bg-green-100 text-green-700 border border-green-200',
   Medium:    'bg-amber-100 text-amber-700 border border-amber-200',

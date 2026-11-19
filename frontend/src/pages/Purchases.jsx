@@ -1,11 +1,12 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { suppliersApi, purchasesApi, medicinesApi } from '../api/client';
 import { PageLoader } from '../components/Spinner';
 import Modal from '../components/Modal';
 import Badge from '../components/Badge';
 import { FormField, Input, Select, Btn, ErrorAlert, Textarea } from '../components/FormComponents';
 import { Plus, Truck, FileText, Trash2, XCircle } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
+import { safeFormatDate } from '../utils/date';
 
 function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
@@ -163,7 +164,15 @@ export default function Purchases() {
   const load = useCallback(() => {
     setLoading(true);
     Promise.all([suppliersApi.list(), purchasesApi.list()])
-      .then(([s, p]) => { setSuppliers(s.data); setPos(p.data); })
+      .then(([s, p]) => {
+        setSuppliers(Array.isArray(s.data) ? s.data : []);
+        setPos(Array.isArray(p.data) ? p.data : []);
+      })
+      .catch((err) => {
+        console.error('Failed to load purchases/suppliers:', err);
+        setSuppliers([]);
+        setPos([]);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -247,8 +256,8 @@ export default function Purchases() {
                   <tr key={p.po_id} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="px-4 py-3 font-mono text-xs">{p.po_id}</td>
                     <td className="px-4 py-3">{p.supplier_name ?? p.supplier_id}</td>
-                    <td className="px-4 py-3 text-xs">{p.order_date ? format(parseISO(p.order_date), 'dd MMM yy') : '—'}</td>
-                    <td className="px-4 py-3 text-xs">{p.expected_delivery_date ? format(parseISO(p.expected_delivery_date), 'dd MMM yy') : '—'}</td>
+                    <td className="px-4 py-3 text-xs">{safeFormatDate(p.order_date)}</td>
+                    <td className="px-4 py-3 text-xs">{safeFormatDate(p.expected_delivery_date)}</td>
                     <td className="px-4 py-3">{p.items?.length ?? 0}</td>
                     <td className="px-4 py-3"><Badge label={p.is_overdue ? 'Overdue' : p.status} /></td>
                     <td className="px-4 py-3">

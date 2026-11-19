@@ -11,11 +11,17 @@ import { differenceInDays, parseISO } from 'date-fns';
 
 // ── Expiry chip helper ────────────────────────────────────────────────────────
 function ExpiryChip({ expiry }) {
-  const days = differenceInDays(parseISO(expiry), new Date());
-  if (days < 0)   return <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-200">Expired</span>;
-  if (days <= 30) return <span className="text-xs px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 border border-orange-200">{days}d left</span>;
-  if (days <= 90) return <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 border border-yellow-200">{days}d left</span>;
-  return <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 border border-green-200">{days}d left</span>;
+  if (!expiry) return <span className="text-xs text-gray-400">—</span>;
+  try {
+    const days = differenceInDays(parseISO(expiry), new Date());
+    if (isNaN(days)) return <span className="text-xs text-gray-400">—</span>;
+    if (days < 0)   return <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-200">Expired</span>;
+    if (days <= 30) return <span className="text-xs px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 border border-orange-200">{days}d left</span>;
+    if (days <= 90) return <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 border border-yellow-200">{days}d left</span>;
+    return <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 border border-green-200">{days}d left</span>;
+  } catch {
+    return <span className="text-xs text-gray-400">—</span>;
+  }
 }
 
 // ── Add Medicine Modal ────────────────────────────────────────────────────────

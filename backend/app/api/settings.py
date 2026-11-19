@@ -44,7 +44,7 @@ def get_audit_logs(
         results.append({
             "log_id": l.log_id,
             "user_id": l.user_id,
-            "username": l.user.username if l.user else None,
+            "username": l.user.username if l.user else ("Unauthenticated" if not l.user_id else None),
             "action": l.action,
             "entity": l.entity,
             "entity_id": l.entity_id,

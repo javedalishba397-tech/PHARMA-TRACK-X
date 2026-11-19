@@ -6,7 +6,7 @@ import Modal from '../components/Modal';
 import Badge from '../components/Badge';
 import { FormField, Select, Btn, ErrorAlert, Textarea, Input } from '../components/FormComponents';
 import { ClipboardList, ChevronDown, ChevronRight, RefreshCw, CheckCircle, XCircle, Edit } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
+import { safeFormatDate } from '../utils/date';
 
 // ── Decision Modal ────────────────────────────────────────────────────────────
 function DecisionModal({ rec, onClose, onSaved }) {
@@ -103,7 +103,7 @@ function RecRow({ rec, onDecide }) {
               <p className="text-gray-600 leading-relaxed">{rec.explanation}</p>
               {rec.suggested_order_qty && <p className="text-blue-700">Suggested Order Qty: <strong>{rec.suggested_order_qty}</strong></p>}
               {rec.pharmacist_comment && <p className="text-gray-500 italic">Pharmacist comment: {rec.pharmacist_comment}</p>}
-              {rec.decided_at && <p className="text-xs text-gray-400">Decided: {format(parseISO(rec.decided_at), 'dd MMM yyyy HH:mm')}</p>}
+              {rec.decided_at && <p className="text-xs text-gray-400">Decided: {safeFormatDate(rec.decided_at, 'dd MMM yyyy HH:mm')}</p>}
             </div>
           </td>
         </tr>
@@ -194,7 +194,7 @@ export default function Recommendations() {
                     <td className="px-4 py-3">{h.final_qty ?? '—'}</td>
                     <td className="px-4 py-3 text-xs">{h.user_name ?? '—'}</td>
                     <td className="px-4 py-3 text-xs text-gray-500">{h.comment ?? '—'}</td>
-                    <td className="px-4 py-3 text-xs text-gray-400">{h.decided_at ? format(parseISO(h.decided_at), 'dd MMM yy HH:mm') : '—'}</td>
+                    <td className="px-4 py-3 text-xs text-gray-400">{safeFormatDate(h.decided_at, 'dd MMM yy HH:mm')}</td>
                   </tr>
                 ))}
                 {history.length === 0 && <tr><td colSpan={8} className="py-8 text-center text-gray-400">No decisions yet</td></tr>}

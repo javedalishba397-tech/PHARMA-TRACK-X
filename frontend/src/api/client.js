@@ -1,25 +1,39 @@
 import axios from 'axios';
 
+let inMemoryToken = null;
+export const setAuthToken = (token) => {
+  inMemoryToken = token;
+};
+
 const client = axios.create({
   baseURL: '/api',
+  withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Attach JWT token to every request
+// Attach in-memory token if present (supplementing HttpOnly cookie)
 client.interceptors.request.use((config) => {
-  const token = localStorage.getItem('ptx_token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (inMemoryToken) {
+    config.headers.Authorization = `Bearer ${inMemoryToken}`;
+  }
   return config;
 });
 
-// Redirect to login on 401
+// Redirect to login on 401 using location.replace() and notify tabs
 client.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401) {
-      localStorage.removeItem('ptx_token');
-      localStorage.removeItem('ptx_user');
-      window.location.href = '/login';
+      inMemoryToken = null;
+      try {
+        const channel = new BroadcastChannel('pharmatrack_auth');
+        channel.postMessage({ type: 'LOGOUT' });
+        channel.close();
+      } catch (e) {}
+      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+        window.history.replaceState(null, '', '/login?reason=session_expired');
+        window.location.replace('/login?reason=session_expired');
+      }
     }
     return Promise.reject(err);
   }
@@ -31,8 +45,11 @@ export default client;
 export const authApi = {
   login: (username, password) =>
     client.post('/auth/login', { username, password }),
+  logout: () => client.post('/auth/logout'),
   me: () => client.get('/auth/me'),
   changePassword: (data) => client.post('/auth/change-password', data),
+  reportUnauthorized: (path, details) =>
+    client.post('/auth/report-unauthorized', { path, details }),
 };
 
 // ── Users ─────────────────────────────────────────────────────────────────────

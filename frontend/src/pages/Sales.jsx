@@ -6,7 +6,7 @@ import Modal from '../components/Modal';
 import Badge from '../components/Badge';
 import { FormField, Input, Select, Btn, ErrorAlert, Textarea } from '../components/FormComponents';
 import { Search, Plus, Trash2, FileText, XCircle, ShoppingCart, UserPlus, ShieldAlert, ArrowRight } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
+import { safeFormatDate } from '../utils/date';
 import { Link } from 'react-router-dom';
 
 function downloadBlob(blob, filename) {
@@ -451,7 +451,7 @@ export default function Sales() {
                 <td className="px-4 py-3 text-right font-bold text-gray-900">₨{Number(s.total_amount).toFixed(2)}</td>
                 <td className="px-4 py-3"><Badge label={s.status} /></td>
                 <td className="px-4 py-3 text-xs text-gray-500">
-                  {s.sale_datetime ? format(parseISO(s.sale_datetime), 'dd MMM yyyy HH:mm') : '—'}
+                  {safeFormatDate(s.sale_datetime, 'dd MMM yyyy HH:mm')}
                 </td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex items-center gap-1.5 justify-end">

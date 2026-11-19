@@ -24,6 +24,7 @@ class User(Base):
     sales = relationship("Sale", foreign_keys="Sale.user_id", back_populates="user")
     stock_adjustments = relationship("StockAdjustment", back_populates="user")
     decision_logs = relationship("DecisionLog", back_populates="user")
+    sessions = relationship("ActiveSession", back_populates="user", cascade="all, delete-orphan")
 
 
 class Medicine(Base):
@@ -268,3 +269,19 @@ class AuditLog(Base):
     result = Column(String(10), nullable=False)  # Success, Failure
     ip_address = Column(String(45), nullable=True)
     logged_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+
+    user = relationship("User")
+
+
+class ActiveSession(Base):
+    __tablename__ = "active_sessions"
+
+    session_id = Column(String(64), primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False, index=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    expires_at = Column(DateTime, nullable=False, index=True)
+    is_active = Column(Boolean, default=True, nullable=False, index=True)
+    ip_address = Column(String(45), nullable=True)
+    user_agent = Column(String(255), nullable=True)
+
+    user = relationship("User", back_populates="sessions")
